@@ -1,0 +1,2 @@
+ID, Account Number, First Name, Last Name, Phone Number, Email, Passport Number
+1 / 00000001 / Stepan / Pavlov / 01169848724 / pvlv.stepan@gmail.com / 763645657

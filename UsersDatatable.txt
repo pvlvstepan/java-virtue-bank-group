@@ -1,0 +1,3 @@
+ID,Username,Fisrt name,Last name,Email,Role,Password,
+2 / VBG000002 / Jeff / Bezos / jeff.bezos@mail.com / Staff / 12345678
+1 / VBG000001 / Stepan / Pavlov / pvlv.stepan@gmail.com / Admin / 12345678

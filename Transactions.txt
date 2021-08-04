@@ -1,0 +1,16 @@
+ID,Account Number,Account,Type,Amount,Timestamp
+1 / 00000001 / Current / Deposit / 300 / 04.08.2021 17:29:09
+2 / 00000001 / Current / Deposit / 125.5 / 04.08.2021 17:29:25
+3 / 00000001 / Current / Deposit / 74.5 / 04.08.2021 17:29:38
+4 / 00000001 / Current / Deposit / 50 / 04.08.2021 17:29:45
+5 / 00000001 / Current / Withdraw / 50 / 04.08.2021 17:31:56
+6 / 00000001 / Savings / Deposit / 22050 / 04.08.2021 17:32:07
+7 / 00000001 / Savings / Deposit / 600000 / 04.08.2021 17:32:17
+8 / 00000001 / Savings / Withdraw / 621950 / 04.08.2021 17:32:35
+9 / 00000001 / Savings / Deposit / 100.2 / 04.08.2021 17:32:42
+10 / 00000001 / Savings / Withdraw / 100 / 04.08.2021 17:32:48
+11 / 00000001 / Savings / Withdraw / 0.2 / 04.08.2021 17:36:29
+12 / 00000001 / Savings / Deposit / 0.25 / 04.08.2021 17:36:42
+13 / 00000001 / Savings / Withdraw / 0.25 / 04.08.2021 17:36:58
+14 / 00000001 / Current / Deposit / 0.25 / 04.08.2021 17:37:04
+15 / 00000001 / Current / Withdraw / 0.25 / 04.08.2021 17:37:09
