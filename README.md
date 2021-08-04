@@ -1,7 +1,7 @@
 
 # Virtue Bank Group - JAVA Application
 
-Intermediate Java banking application that allows users to create bank accounts for customers and perform withdra and deposit transactions on them.
+Intermediate Java banking application that allows users to create bank accounts for customers and perform withdrawal and deposit transactions on them.
 
 Validation is implemented on all forms to avoid logic errors and Admin users are allowed to create new staff and admin accounts.
 
