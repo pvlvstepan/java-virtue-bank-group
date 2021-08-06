@@ -1,9 +1,8 @@
 package Pages;
 
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
+import Utils.GlobalStorage;
+import Utils.Navigation;
+import Utils.FileOperations;
 import java.util.Random;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -397,61 +396,30 @@ public class AddUser extends javax.swing.JFrame {
         setLocationRelativeTo(null);
     }// </editor-fold>//GEN-END:initComponents
 
-    private void findUnusedUserId() {
+    private void GenerateUserId() {
         String filepath = "UsersDatatable.txt";
 
-        try {
-            BufferedReader br = new BufferedReader(new FileReader(filepath));
+        // get unused user ID from file
+        userId = FileOperations.FindUnusedID(filepath);
 
-            //skip the first line of file with headers
-            br.readLine();
-            String line = null;
+        // genereate new userId string to VBGXXXXXX format
+        String generatedUsername = "VBG" + String.format("%06d", userId);
 
-            for (line = br.readLine(); line != null; line = br.readLine()) {
-                //remove whitespace and split by / char
-                String[] parts = line.replaceAll("\\s+", "").split("/");
-                // convert string userId to integer
-                int tempUserId = Integer.parseInt(parts[0]);
-
-                // find the largest userId in the file
-                if (tempUserId > userId) {
-                    userId = tempUserId;
-                }
-            }
-
-            // increment userId by 1
-            userId = userId + 1;
-
-            br.close();
-        } catch (IOException | NumberFormatException e) {
-            JOptionPane.showMessageDialog(null, "Something went wrong...", "Error", JOptionPane.ERROR_MESSAGE);
-        }
+        // set userId input text to newly generatet userId
+        UsernameInput.setText(generatedUsername);
 
     }
 
     private void addUser(String username, String firstName, String lastName, String email, String userRole, String password) {
         String filepath = "UsersDatatable.txt";
 
-        try {
-            FileWriter fw = new FileWriter(filepath, true);
+        String[] values = new String[]{userId.toString(), username, firstName, lastName, email, userRole, password};
 
-            // write new line into users file
-            fw.write("" + userId + " / " + username + " / " + firstName + " / " + lastName + " / " + email + " / " + userRole + " / " + password + "");
+        FileOperations.InsertLine(filepath, values, "User Added Successfuly");
 
-            // add empty line for future rows
-            fw.write(System.getProperty("line.separator"));
-            fw.close();
-
-            JOptionPane.showMessageDialog(null, "User added successfuly", "Success", JOptionPane.INFORMATION_MESSAGE);
-
-            // go back to users window
-            this.dispose();
-            Users window = new Users();
-            window.setVisible(true);
-
-        } catch (IOException e) {
-            JOptionPane.showMessageDialog(null, "Something went wrong...", "Error", JOptionPane.ERROR_MESSAGE);
-        }
+        this.dispose();
+        Users window = new Users();
+        window.setVisible(true);
     }
 
     private void HomeButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_HomeButtonActionPerformed
@@ -508,14 +476,7 @@ public class AddUser extends javax.swing.JFrame {
     }//GEN-LAST:event_AddUserBtnActionPerformed
 
     private void GenerateUsernameBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_GenerateUsernameBtnActionPerformed
-        // get unused user ID from file
-        findUnusedUserId();
-
-        // genereate new userId string to VBGXXXXXX format
-        String generatedUsername = "VBG" + String.format("%06d", userId);
-
-        // set userId input text to newly generatet userId
-        UsernameInput.setText(generatedUsername);
+        GenerateUserId();
     }//GEN-LAST:event_GenerateUsernameBtnActionPerformed
 
     private void ShowPwdBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ShowPwdBtnActionPerformed
@@ -531,11 +492,7 @@ public class AddUser extends javax.swing.JFrame {
     }//GEN-LAST:event_ShowPwdBtnActionPerformed
 
     private void jButton5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton5ActionPerformed
-        int dialogResult = JOptionPane.showConfirmDialog(null, "Are you sure you want to log out?", "Warning", JOptionPane.YES_NO_OPTION);
-        if (dialogResult == JOptionPane.YES_OPTION) {
-            // if logout confirmed
-            Navigation.Logout(this);
-        }
+        Navigation.Logout(this);
     }//GEN-LAST:event_jButton5ActionPerformed
 
     public static void main(String args[]) {

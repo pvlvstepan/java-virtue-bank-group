@@ -1,10 +1,8 @@
 package Pages;
 
-import java.awt.HeadlessException;
-import java.io.File;
-import java.io.FileNotFoundException;
+import Utils.GlobalStorage;
+import Utils.Navigation;
 import java.util.Scanner;
-import javax.swing.JOptionPane;
 
 public class Dashboard extends javax.swing.JFrame {
 
@@ -250,11 +248,7 @@ public class Dashboard extends javax.swing.JFrame {
     }//GEN-LAST:event_UsersButtonActionPerformed
 
     private void jButton5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton5ActionPerformed
-        int dialogResult = JOptionPane.showConfirmDialog(null, "Are you sure you want to log out?", "Warning", JOptionPane.YES_NO_OPTION);
-        if (dialogResult == JOptionPane.YES_OPTION) {
-            // if logout confirmed
-            Navigation.Logout(this);
-        }
+        Navigation.Logout(this);
     }//GEN-LAST:event_jButton5ActionPerformed
 
     private void HomeButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_HomeButtonActionPerformed

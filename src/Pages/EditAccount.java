@@ -1,5 +1,8 @@
 package Pages;
 
+import Utils.FileOperations;
+import Utils.GlobalStorage;
+import Utils.Navigation;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
@@ -386,144 +389,28 @@ public class EditAccount extends javax.swing.JFrame {
     }
 
     private void editAcc(String account, String firstName, String lastName, String email, String phone, String passportNumber) {
-        File f = new File("Accounts.txt");
+        String FilePath = "Accounts.txt";
+        String[] values = new String[]{accountId.toString(), account, firstName, lastName, phone, email, passportNumber};
 
-        //create temporary file
-        File temp = new File("Accounts_temp.txt");
+        FileOperations.EditLine(FilePath, "Changes saved successfuly", 0, accountId.toString(), values);
 
-        try {
-            BufferedReader br = new BufferedReader(new FileReader(f));
-            BufferedWriter bw = new BufferedWriter(new FileWriter(temp));
-
-            String line;
-
-            // read every line of the original file
-            while ((line = br.readLine()) != null) {
-                // remove whitespace and split by / char
-                String[] parts = line.replaceAll("\\s+", "").split("/");
-                // get temporary accound id from the line
-                String tempAccId = parts[0];
-
-                // if account id equals to the editing account id then skip this line
-                if (tempAccId.equals(accountId)) {
-                    continue;
-                }
-
-                // if line is not skipped, write it to a temp file
-                bw.write(line + System.getProperty("line.separator"));
-            }
-
-            // write newly edited line to the temp file
-            bw.write("" + accountId + " / " + account + " / " + firstName + " / " + lastName + " / " + phone + " / " + email + " / " + passportNumber + "");
-            bw.write(System.getProperty("line.separator"));
-
-            bw.close();
-            br.close();
-
-            // delete original file and rename temp file to the original one
-            f.delete();
-            temp.renameTo(f);
-
-            JOptionPane.showMessageDialog(null, "Changes saved successfuly", "Success", JOptionPane.INFORMATION_MESSAGE);
-
-            // go back to account view
-            this.dispose();
-            ViewAccount window = new ViewAccount();
-            window.setVisible(true);
-
-        } catch (IOException e) {
-            JOptionPane.showMessageDialog(null, "Something went wrong...", "Error", JOptionPane.ERROR_MESSAGE);
-        }
+        Navigation.NavigateAccounts(this);
     }
 
     private void deleteAcc() {
-        File f = new File("Accounts.txt");
-        // create temp file
-        File temp = new File("Accounts_temp.txt");
+        String FilePath = "Accounts.txt";
+        FileOperations.DeleteLine(FilePath, "Account deleted successfuly", 0, accountId.toString());
 
-        try {
-            BufferedReader br = new BufferedReader(new FileReader(f));
-            BufferedWriter bw = new BufferedWriter(new FileWriter(temp));
+        deleteTransactions();
 
-            String line;
-
-            // loop through every line of the orifinal file
-            while ((line = br.readLine()) != null) {
-                // remove whitespace and split by / char
-                String[] parts = line.replaceAll("\\s+", "").split("/");
-                // get accountId from the line part
-                String tempAccId = parts[0];
-
-                // if line's accountId equal to the one needed to be deleted skip it
-                if (tempAccId.equals(accountId)) {
-                    continue;
-                }
-
-                // if line is not skipped write it to temp file
-                bw.write(line + System.getProperty("line.separator"));
-            }
-
-            bw.close();
-            br.close();
-
-            // delete original file and rename temp file to the original one
-            f.delete();
-            temp.renameTo(f);
-
-            // clean up transactions after account deletion
-            deleteTransactions();
-
-            JOptionPane.showMessageDialog(null, "Account deleted successfuly", "Success", JOptionPane.INFORMATION_MESSAGE);
-
-            // go back to accounts widnow
-            this.dispose();
-            Accounts window = new Accounts();
-            window.setVisible(true);
-
-        } catch (IOException e) {
-            JOptionPane.showMessageDialog(null, "Something went wrong...", "Error", JOptionPane.ERROR_MESSAGE);
-        }
+        // go back to accounts widnow
+        Navigation.NavigateAccounts(this);
     }
 
     private void deleteTransactions() {
-        File f = new File("Transactions.txt");
-        // create temp file
-        File temp = new File("Transactions_temp.txt");
+        String FilePath = "Transactions.txt";
 
-        try {
-            BufferedReader br = new BufferedReader(new FileReader(f));
-            BufferedWriter bw = new BufferedWriter(new FileWriter(temp));
-
-            String line;
-            line = br.readLine();
-            bw.write(line + System.getProperty("line.separator"));
-
-            // loop through every line of the orifinal file
-            while ((line = br.readLine()) != null) {
-                // remove whitespace and split by / char
-                String[] parts = line.replaceAll("\\s+", "").split("/");
-                // get accountId from the line part
-
-                String tempAccId = parts[1];
-
-                // if line's accountNumber equal to the one needed to be deleted skip it
-                if (tempAccId.equals(accountNumber)) {
-                    continue;
-                }
-                // if line is not skipped write it to temp file
-                bw.write(line + System.getProperty("line.separator"));
-            }
-
-            bw.close();
-            br.close();
-
-            // delete original file and rename temp file to the original one
-            f.delete();
-            temp.renameTo(f);
-
-        } catch (IOException e) {
-            JOptionPane.showMessageDialog(null, "Something went wrong...", "Error", JOptionPane.ERROR_MESSAGE);
-        }
+        FileOperations.DeleteLine(FilePath, "", 1, accountNumber.toString());
     }
 
     private void HomeButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_HomeButtonActionPerformed
@@ -539,11 +426,7 @@ public class EditAccount extends javax.swing.JFrame {
     }//GEN-LAST:event_UsersButtonActionPerformed
 
     private void jButton5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton5ActionPerformed
-        int dialogResult = JOptionPane.showConfirmDialog(null, "Are you sure you want to log out?", "Warning", JOptionPane.YES_NO_OPTION);
-        if (dialogResult == JOptionPane.YES_OPTION) {
-            // logout confirmed
-            Navigation.Logout(this);
-        }
+        Navigation.Logout(this);
     }//GEN-LAST:event_jButton5ActionPerformed
 
     private void EditAccBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_EditAccBtnActionPerformed

@@ -1,9 +1,8 @@
 package Pages;
 
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
+import Utils.GlobalStorage;
+import Utils.Navigation;
+import Utils.FileOperations;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import javax.swing.JOptionPane;
@@ -342,61 +341,29 @@ public class AddAccount extends javax.swing.JFrame {
         setLocationRelativeTo(null);
     }// </editor-fold>//GEN-END:initComponents
 
-    private void findUnusedAccId() {
+    private void GenerateAccId() {
         String filepath = "Accounts.txt";
 
-        try {
-            BufferedReader br = new BufferedReader(new FileReader(filepath));
+        // get unused account ID from file
+        accId = FileOperations.FindUnusedID(filepath);
 
-            //skip the first line of file with headers
-            br.readLine();
-            String line = null;
+        // genereate new accountId string to XXXXXXXX format
+        String generatedAcc = String.format("%08d", accId);
 
-            for (line = br.readLine(); line != null; line = br.readLine()) {
-
-                //remove whitespace and split by / char
-                String[] parts = line.replaceAll("\\s+", "").split("/");
-
-                // convert string accId to integer
-                int tempAccId = Integer.parseInt(parts[0]);
-
-                // find the largest accountId in the file
-                if (tempAccId > accId) {
-                    accId = tempAccId;
-                }
-            }
-
-            // increment accId by 1
-            accId = accId + 1;
-
-            br.close();
-        } catch (IOException | NumberFormatException e) {
-            JOptionPane.showMessageDialog(null, "Something went wrong...", "Error", JOptionPane.ERROR_MESSAGE);
-        }
+        // set account input text to newly generatet accountId
+        AccInput.setText(generatedAcc);
     }
 
     private void addAcc(String account, String firstName, String lastName, String email, String phone, String passportNumber) {
         String filepath = "Accounts.txt";
 
-        try {
-            FileWriter fw = new FileWriter(filepath, true);
+        String[] values = new String[]{accId.toString(), account, firstName, lastName, phone, email, passportNumber};
 
-            // write new line into accounts file
-            fw.write("" + accId + " / " + account + " / " + firstName + " / " + lastName + " / " + phone + " / " + email + " / " + passportNumber + "");
-            // add empty line for future rows
-            fw.write(System.getProperty("line.separator"));
-            fw.close();
+        FileOperations.InsertLine(filepath, values, "Account Added Successfuly");
 
-            JOptionPane.showMessageDialog(null, "Account added successfuly", "Success", JOptionPane.INFORMATION_MESSAGE);
-
-            // go back to accounts window
-            this.dispose();
-            Accounts window = new Accounts();
-            window.setVisible(true);
-
-        } catch (IOException e) {
-            JOptionPane.showMessageDialog(null, "Something went wrong...", "Error", JOptionPane.ERROR_MESSAGE);
-        }
+        this.dispose();
+        Accounts window = new Accounts();
+        window.setVisible(true);
     }
 
     private void HomeButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_HomeButtonActionPerformed
@@ -412,11 +379,7 @@ public class AddAccount extends javax.swing.JFrame {
     }//GEN-LAST:event_UsersButtonActionPerformed
 
     private void jButton5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton5ActionPerformed
-        int dialogResult = JOptionPane.showConfirmDialog(null, "Are you sure you want to log out?", "Warning", JOptionPane.YES_NO_OPTION);
-        if (dialogResult == JOptionPane.YES_OPTION) {
-            // if logout confirmed
-            Navigation.Logout(this);
-        }
+        Navigation.Logout(this);
     }//GEN-LAST:event_jButton5ActionPerformed
 
     private void AddAccBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_AddAccBtnActionPerformed
@@ -463,15 +426,7 @@ public class AddAccount extends javax.swing.JFrame {
     }//GEN-LAST:event_AddAccBtnActionPerformed
 
     private void GenerateAccBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_GenerateAccBtnActionPerformed
-
-        // get unused account ID from file
-        findUnusedAccId();
-
-        // genereate new accountId string to XXXXXXXX format
-        String generatedAcc = String.format("%08d", accId);
-
-        // set account input text to newly generatet accountId
-        AccInput.setText(generatedAcc);
+        GenerateAccId();
     }//GEN-LAST:event_GenerateAccBtnActionPerformed
 
     public static void main(String args[]) {

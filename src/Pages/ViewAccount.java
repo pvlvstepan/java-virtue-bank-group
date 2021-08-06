@@ -1,9 +1,11 @@
 package Pages;
 
+import Utils.GlobalStorage;
+import Utils.Navigation;
+import Utils.FileOperations;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
-import java.io.FileWriter;
 import java.io.IOException;
 import static java.lang.Double.parseDouble;
 import java.text.DecimalFormat;
@@ -24,6 +26,11 @@ public class ViewAccount extends javax.swing.JFrame {
 
     // declare private accountNumber variable
     private String accountNumber = "";
+
+    private Integer transactionId = 0;
+
+    private Integer minSavings = 100;
+    private Integer minCurrent = 500;
 
     // declare decimal format to format doubles
     DecimalFormat decimalFormat = new DecimalFormat("0.##");
@@ -628,12 +635,12 @@ public class ViewAccount extends javax.swing.JFrame {
             }
 
             // toggle withdraw buttons based on the balance
-            if (savingsBalance <= 100) {
+            if (savingsBalance <= minSavings) {
                 SWithdraw.setEnabled(false);
             } else {
                 SWithdraw.setEnabled(true);
             }
-            if (currentBalance <= 500) {
+            if (currentBalance <= minCurrent) {
                 CWithdraw.setEnabled(false);
             } else {
                 CWithdraw.setEnabled(true);
@@ -658,59 +665,55 @@ public class ViewAccount extends javax.swing.JFrame {
         }
     }
 
-    private Integer transactionId = 0;
-
-    private void findUnusedTransactionId() {
-        // find the largest TransactionId in the file and assign a new TransactionId
-
-        String filepath = "Transactions.txt";
-
-        try {
-            BufferedReader br = new BufferedReader(new FileReader(filepath));
-            br.readLine();
-            String line = null;
-
-            for (line = br.readLine(); line != null; line = br.readLine()) {
-                String[] parts = line.replaceAll("\\s+", "").split("/");
-                int tempTcId = Integer.parseInt(parts[0]);
-
-                if (tempTcId > transactionId) {
-                    transactionId = tempTcId;
-                }
-            }
-
-            transactionId = transactionId + 1;
-
-            br.close();
-        } catch (IOException | NumberFormatException e) {
-            JOptionPane.showMessageDialog(null, "Something went wrong...", "Error", JOptionPane.ERROR_MESSAGE);
-        }
-
-    }
-
     private void performTransaction(String account, String type, Double amount) {
-        findUnusedTransactionId();
-
         String filepath = "Transactions.txt";
+
+        transactionId = FileOperations.FindUnusedID(filepath);
 
         // declare a timestamp for the transaction
         String timestamp = new SimpleDateFormat("dd.MM.YYYY HH:mm:ss").format(new Date()).toString();
 
-        try {
-            FileWriter fw = new FileWriter(filepath, true);
+        String[] values = new String[]{transactionId.toString(), accountNumber.toString(), account, type, decimalFormat.format(amount).toString(), timestamp};
 
-            // insert new transaction into the file
-            fw.write("" + transactionId + " / " + accountNumber + " / " + account + " / " + type + " / " + decimalFormat.format(amount).toString() + " / " + timestamp + "");
-            fw.write(System.getProperty("line.separator"));
-            fw.close();
+        FileOperations.InsertLine(filepath, values, "Transaction completed successfuly");
 
-            JOptionPane.showMessageDialog(null, "Transaction completed successfuly", "Success", JOptionPane.INFORMATION_MESSAGE);
+        LoadTransactions();
+    }
 
-            // reload transactions table
-            LoadTransactions();
+    private void ValidateWithdraw(String Account, Integer Min, Double balance) {
+        // show withdraw dialog
+        String s = JOptionPane.showInputDialog("Enter amount to withdraw from " + Account);
+        double d;
+        if (s != null) {
+            try {
+                // parse input string to double
+                d = Double.parseDouble(s);
 
-        } catch (IOException e) {
-            JOptionPane.showMessageDialog(null, "Something went wrong...", "Error", JOptionPane.ERROR_MESSAGE);
+                // check if the balance fill be affected, otherwise perform withdrawal
+                if ((balance - d) < Min) {
+                    JOptionPane.showMessageDialog(null, "A minimum balance of RM " + Min + ".00 on " + Account + " will be exceeded. Try entering amount less than RM " + decimalFormat.format((balance - Min)).toString(), "Error", JOptionPane.ERROR_MESSAGE);
+                } else {
+                    performTransaction(Account, "Withdraw", d);
+                }
+            } catch (NumberFormatException e) {
+                JOptionPane.showMessageDialog(null, "You've entered wrong number", "Error", JOptionPane.ERROR_MESSAGE);
+            }
+        }
+    }
+
+    private void ValidateDeposit(String Account) {
+        String s = JOptionPane.showInputDialog("Enter amount to deposit on " + Account);
+        double d;
+        if (s != null) {
+            try {
+                // parse input string to double
+                d = Double.parseDouble(s);
+
+                // perform deposit
+                performTransaction(Account, "Deposit", d);
+            } catch (NumberFormatException e) {
+                JOptionPane.showMessageDialog(null, "You've entered wrong number", "Error", JOptionPane.ERROR_MESSAGE);
+            }
         }
     }
 
@@ -727,33 +730,11 @@ public class ViewAccount extends javax.swing.JFrame {
     }//GEN-LAST:event_UsersButtonActionPerformed
 
     private void jButton5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton5ActionPerformed
-        int dialogResult = JOptionPane.showConfirmDialog(null, "Are you sure you want to log out?", "Warning", JOptionPane.YES_NO_OPTION);
-        if (dialogResult == JOptionPane.YES_OPTION) {
-            // if logout confirmed
-            Navigation.Logout(this);
-        }
+        Navigation.Logout(this);
     }//GEN-LAST:event_jButton5ActionPerformed
 
     private void CWithdrawActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_CWithdrawActionPerformed
-        // show withdraw dialog
-        String s = JOptionPane.showInputDialog("Enter amount to withdraw from savings");
-        double d;
-        if (s != null) {
-            try {
-                // parse input string to double
-                d = Double.parseDouble(s);
-
-                // check if the balance fill be affected, otherwise perform withdrawal
-                if ((currentBalance - d) < 500) {
-                    JOptionPane.showMessageDialog(null, "A minimum balance of RM 500.00 on current will be exceeded. Try entering amount less than RM" + decimalFormat.format((currentBalance - 500)).toString(), "Error", JOptionPane.ERROR_MESSAGE);
-                } else {
-                    performTransaction("Current", "Withdraw", d);
-                }
-            } catch (NumberFormatException e) {
-                JOptionPane.showMessageDialog(null, "You've entered wrong number", "Error", JOptionPane.ERROR_MESSAGE);
-            }
-        }
-
+        ValidateWithdraw("Current", minCurrent, currentBalance);
     }//GEN-LAST:event_CWithdrawActionPerformed
 
     private void EditAccBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_EditAccBtnActionPerformed
@@ -767,58 +748,15 @@ public class ViewAccount extends javax.swing.JFrame {
     }//GEN-LAST:event_EditAccBtnActionPerformed
 
     private void CDepositActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_CDepositActionPerformed
-        String s = JOptionPane.showInputDialog("Enter amount to deposit on current");
-        double d;
-        if (s != null) {
-            try {
-                // parse input string to double
-                d = Double.parseDouble(s);
-
-                // perform deposit
-                performTransaction("Current", "Deposit", d);
-            } catch (NumberFormatException e) {
-                JOptionPane.showMessageDialog(null, "You've entered wrong number", "Error", JOptionPane.ERROR_MESSAGE);
-            }
-        }
-
+        ValidateDeposit("Current");
     }//GEN-LAST:event_CDepositActionPerformed
 
     private void SWithdrawActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_SWithdrawActionPerformed
-        // show withdraw dialog
-        String s = JOptionPane.showInputDialog("Enter amount to withdraw from savings");
-        double d;
-        if (s != null) {
-            try {
-                // parse input string to double
-                d = Double.parseDouble(s);
-
-                // check if the balance fill be affected, otherwise perform withdrawal
-                if ((savingsBalance - d) < 100) {
-                    JOptionPane.showMessageDialog(null, "A minimum balance of RM 100.00 on savings will be exceeded. Try entering amount less than RM " + decimalFormat.format((savingsBalance - 100)).toString(), "Error", JOptionPane.ERROR_MESSAGE);
-                } else {
-                    performTransaction("Savings", "Withdraw", d);
-                }
-            } catch (NumberFormatException e) {
-                JOptionPane.showMessageDialog(null, "You've entered wrong number", "Error", JOptionPane.ERROR_MESSAGE);
-            }
-        }
-
+        ValidateWithdraw("Savings", minSavings, savingsBalance);
     }//GEN-LAST:event_SWithdrawActionPerformed
 
     private void SDepositActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_SDepositActionPerformed
-        String s = JOptionPane.showInputDialog("Enter amount to deposit on savings");
-        double d;
-        if (s != null) {
-            try {
-                // parse input string to double
-                d = Double.parseDouble(s);
-                // perform deposit
-                performTransaction("Savings", "Deposit", d);
-            } catch (NumberFormatException e) {
-                JOptionPane.showMessageDialog(null, "You've entered wrong number", "Error", JOptionPane.ERROR_MESSAGE);
-            }
-        }
-
+        ValidateDeposit("Savings");
     }//GEN-LAST:event_SDepositActionPerformed
 
     public static void main(String args[]) {

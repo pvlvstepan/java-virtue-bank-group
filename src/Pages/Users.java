@@ -1,14 +1,10 @@
 package Pages;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
-import javax.swing.JOptionPane;
+import Utils.GlobalStorage;
+import Utils.Navigation;
+import Utils.FileOperations;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
-import javax.swing.table.DefaultTableModel;
-import javax.swing.table.TableColumnModel;
 
 public class Users extends javax.swing.JFrame {
 
@@ -278,57 +274,9 @@ public class Users extends javax.swing.JFrame {
 
     private void LoadUsers(String searchTerm) {
         String filepath = "UsersDatatable.txt";
-        File f = new File(filepath);
+        int[] rowsToDelete = new int[]{6};
 
-        try {
-            BufferedReader br = new BufferedReader(new FileReader(f));
-            // get first line as table headers
-            String header = br.readLine().trim();
-
-            // split line with coma separator
-            String[] columnTitles = header.split(",");
-
-            // assign table models to alter rows and columns later
-            DefaultTableModel m = (DefaultTableModel) jTable1.getModel();
-            TableColumnModel cm = (TableColumnModel) jTable1.getColumnModel();
-
-            //set column identifiers
-            m.setColumnIdentifiers(columnTitles);
-
-            // Assign file lines to array
-            Object[] tableRows = br.lines().toArray();
-
-            // clear table rows before loading new ones
-            for (int i = jTable1.getRowCount() - 1; i >= 0; i--) {
-                m.removeRow(i);
-            }
-
-            for (int i = 0; i < tableRows.length; i++) {
-                // remove whitespace in line
-                String line = tableRows[i].toString().replaceAll("\\s+", "");
-                // if search input is "" load all users
-                if (line != null && searchTerm == "") {
-                    String[] dataRow = line.split("/");
-                    m.addRow(dataRow);
-                    // else if search input is not empty load users that contain search string
-                } else if (line != null && line.contains(searchTerm)) {
-                    String[] dataRow = line.split("/");
-                    m.addRow(dataRow);
-                }
-
-            }
-            // remove column with user password
-            jTable1.removeColumn(jTable1.getColumnModel().getColumn(6));
-
-            // disable table editing
-            jTable1.setDefaultEditor(Object.class, null);
-            cm.getColumn(0).setPreferredWidth(1);
-
-            br.close();
-
-        } catch (IOException ex) {
-            JOptionPane.showMessageDialog(null, "Something went wrong...", "Error", JOptionPane.ERROR_MESSAGE);
-        }
+        FileOperations.LoadDataTable(filepath, searchTerm, jTable1, rowsToDelete);
     }
 
     private void HomeButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_HomeButtonActionPerformed
@@ -356,11 +304,7 @@ public class Users extends javax.swing.JFrame {
     }//GEN-LAST:event_SearchInputKeyPressed
 
     private void jButton5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton5ActionPerformed
-        int dialogResult = JOptionPane.showConfirmDialog(null, "Are you sure you want to log out?", "Warning", JOptionPane.YES_NO_OPTION);
-        if (dialogResult == JOptionPane.YES_OPTION) {
-            // if logout confirmed
-            Navigation.Logout(this);
-        }
+        Navigation.Logout(this);
     }//GEN-LAST:event_jButton5ActionPerformed
 
     public static void main(String args[]) {

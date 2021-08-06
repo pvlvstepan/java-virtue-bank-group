@@ -14,3 +14,5 @@ ID,Account Number,Account,Type,Amount,Timestamp
 13 / 00000001 / Savings / Withdraw / 0.25 / 04.08.2021 17:36:58
 14 / 00000001 / Current / Deposit / 0.25 / 04.08.2021 17:37:04
 15 / 00000001 / Current / Withdraw / 0.25 / 04.08.2021 17:37:09
+16 / 00000001 / Current / Deposit / 100 / 07.08.2021 03:48:31
+17 / 00000001 / Current / Withdraw / 100 / 07.08.2021 03:48:38

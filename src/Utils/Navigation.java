@@ -1,6 +1,12 @@
-package Pages;
+package Utils;
 
+import Pages.Accounts;
+import Pages.Dashboard;
+import Pages.EditProfile;
+import Pages.Login;
+import Pages.Users;
 import javax.swing.JFrame;
+import javax.swing.JOptionPane;
 
 public class Navigation {
 
@@ -32,14 +38,19 @@ public class Navigation {
     }
 
     public static void Logout(JFrame caller) {
-        // clear global variables
-        GlobalStorage.first_name = "";
-        GlobalStorage.last_name = "";
-        GlobalStorage.user_role = "";
-        GlobalStorage.userId = "";
+        int dialogResult = JOptionPane.showConfirmDialog(null, "Are you sure you want to log out?", "Warning", JOptionPane.YES_NO_OPTION);
+        if (dialogResult == JOptionPane.YES_OPTION) {
+            //if logout confirmed
+            // clear global variables
+            GlobalStorage.first_name = "";
+            GlobalStorage.last_name = "";
+            GlobalStorage.user_role = "";
+            GlobalStorage.userId = "";
 
-        caller.dispose();
-        Login window = new Login();
-        window.setVisible(true);
+            caller.dispose();
+            Login window = new Login();
+            window.setVisible(true);
+        }
+
     }
 }
