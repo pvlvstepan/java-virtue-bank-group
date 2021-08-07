@@ -47,6 +47,7 @@ public class ViewAccount extends javax.swing.JFrame {
         // hide users Button if user role is not Admin
         if (!GlobalStorage.user_role.equals("Admin")) {
             UsersButton.setVisible(false);
+            EditAccBtn.setVisible(false);
         }
     }
 
